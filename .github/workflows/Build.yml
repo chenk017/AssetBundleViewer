@@ -3,21 +3,19 @@ name: Build Android APK 🚀
 on:
   push:
     branches:
-      - main  # Otomatis berjalan setiap ada push ke branch main
-  workflow_dispatch: # Tombol manual di tab Actions GitHub
+      - main
+  workflow_dispatch:
 
 jobs:
   buildAndroid:
     name: Build for Android 📱
     runs-on: ubuntu-latest
     steps:
-      # 1. Mengambil kode dari repositori
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           lfs: true
 
-      # 2. Proses Build Unity (Otomatis membaca secret UNITY_LICENSE, UNITY_EMAIL, UNITY_PASSWORD)
       - name: Build Unity Project
         uses: game-ci/unity-builder@v2
         env:
@@ -25,10 +23,12 @@ jobs:
           UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
         with:
+          # Tentukan jalur folder proyek jika file ProjectSettings berada di dalam subfolder. 
+          # Contoh: jika foldernya bernama "AssetBundleViewer-master", ubah baris di bawah ini:
+          projectPath: . 
           targetPlatform: Android
-          androidAppBundle: false  # Ubah ke true jika ingin format .aab untuk Google Play
+          androidAppBundle: false
 
-      # 3. Menyimpan hasil file APK agar bisa di-download
       - name: Upload APK Result
         uses: actions/upload-artifact@v4
         with:
