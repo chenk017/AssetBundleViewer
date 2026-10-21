@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main  # Otomatis berjalan setiap ada push ke branch main
-  workflow_dispatch: # Memungkinkan kamu menjalankan manual dari tab Actions di GitHub
+  workflow_dispatch: # Tombol manual di tab Actions GitHub
 
 jobs:
   buildAndroid:
@@ -17,25 +17,18 @@ jobs:
         with:
           lfs: true
 
-      # 2. Mengaktifkan Unity Editor di Cloud menggunakan file .ulf (.github secrets)
-      - name: Unity License Activation
-        uses: game-ci/unity-request-activation-file@v2
-        id: activation
-        env:
-          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
-          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
-          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
-
-      # 3. Proses Build APK Android menggunakan Game-CI Builder
+      # 2. Proses Build Unity (Otomatis membaca secret UNITY_LICENSE, UNITY_EMAIL, UNITY_PASSWORD)
       - name: Build Unity Project
         uses: game-ci/unity-builder@v2
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
         with:
           targetPlatform: Android
-          androidAppBundle: false  # Set 'true' jika ingin format .aab untuk Play Store, 'false' untuk .apk biasa
+          androidAppBundle: false  # Ubah ke true jika ingin format .aab untuk Google Play
 
-      # 4. Menyimpan hasil file APK agar bisa di-download setelah build selesai
+      # 3. Menyimpan hasil file APK agar bisa di-download
       - name: Upload APK Result
         uses: actions/upload-artifact@v4
         with:
